@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>LUCK WORLD v7.0 | 10 TOR | 10 Workers</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&family=Outfit:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#040810;--bg2:#080f1e;--bg3:#0c1525;--bg4:#0f1c30;
+  --blue:#3b82f6;--orange:#f97316;--green:#22c55e;--red:#ef4444;
+  --cyan:#22d3ee;--purple:#a78bfa;--yellow:#eab308;--pink:#ec4899;
+  --border:#1a2744;--border2:#1e3050;
+  --text:#e2e8f0;--muted:#64748b;--dim:#334155;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);font-family:'Outfit',sans-serif;min-height:100vh;color:var(--text);overflow-x:hidden}
+body::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;background:radial-gradient(ellipse at 20% 0%,rgba(59,130,246,.07) 0%,transparent 60%),radial-gradient(ellipse at 80% 100%,rgba(249,115,22,.05) 0%,transparent 60%);pointer-events:none;z-index:0}
+
+#app{width:100%;max-width:980px;margin:0 auto;padding:8px;position:relative;z-index:1}
+
+/* ── HEADER ── */
+.hdr{background:linear-gradient(135deg,var(--bg3),var(--bg2));border:1px solid var(--border);border-radius:14px;padding:16px 20px;text-align:center;margin-bottom:8px;position:relative;overflow:hidden}
+.hdr::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--blue),var(--orange),var(--blue),transparent)}
+.hdr::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(249,115,22,.3),transparent)}
+.hdr h1{font-size:28px;font-weight:900;letter-spacing:8px;text-transform:uppercase;font-family:'Outfit',sans-serif}
+.hdr h1 .glow{color:var(--orange);text-shadow:0 0 30px rgba(249,115,22,.6),0 0 60px rgba(249,115,22,.3)}
+.tag{color:var(--blue);font-size:9px;margin-top:4px;letter-spacing:3px;font-weight:700;opacity:.8}
+.live-row{display:flex;justify-content:center;align-items:center;gap:10px;margin-top:8px}
+.live-badge{background:#ef4444;color:#fff;font-size:9px;font-weight:800;padding:3px 12px;border-radius:10px;letter-spacing:1px;animation:pulse-live 1.5s infinite}
+@keyframes pulse-live{0%,100%{opacity:1;box-shadow:0 0 8px rgba(239,68,68,.5)}50%{opacity:.5;box-shadow:none}}
+.conn-dot{width:10px;height:10px;border-radius:50%;background:#ef4444;transition:all .3s}
+.conn-dot.on{background:#22c55e;box-shadow:0 0 10px #22c55e}
+.conn-txt{color:var(--muted);font-size:10px;font-weight:700}
+
+/* ── STATS GRID ── */
+.stats{display:grid;grid-template-columns:repeat(6,1fr);gap:5px;margin-bottom:8px}
+@media(max-width:600px){.stats{grid-template-columns:repeat(3,1fr)}}
+.stat{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:8px 6px;text-align:center;position:relative;overflow:hidden;transition:border-color .3s}
+.stat::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;opacity:.7}
+.stat.s-purple::before{background:var(--purple)}
+.stat.s-green::before{background:var(--green)}
+.stat.s-orange::before{background:var(--orange)}
+.stat.s-cyan::before{background:var(--cyan)}
+.stat.s-yellow::before{background:var(--yellow)}
+.stat.s-red::before{background:var(--red)}
+.stat-label{color:var(--muted);font-size:7px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px}
+.stat-val{color:var(--text);font-size:15px;font-weight:800;margin-top:2px;font-variant-numeric:tabular-nums;font-family:'JetBrains Mono',monospace}
+.stat.s-orange .stat-val{color:var(--orange)}
+.stat.s-green .stat-val{color:var(--green)}
+
+/* ── COIN SELECTOR ── */
+.section{background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:10px 12px;margin-bottom:8px}
+.sec-title{color:var(--blue);font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:2px;margin-bottom:8px}
+.coins-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.coin-btn{padding:8px 4px;border:2px solid var(--border);border-radius:10px;background:var(--bg2);color:var(--muted);cursor:pointer;text-align:center;transition:all .2s;font-size:12px;font-weight:700;user-select:none;-webkit-tap-highlight-color:transparent;font-family:'Outfit',sans-serif}
+.coin-btn:active{transform:scale(.94)}
+.coin-btn.active{border-color:var(--orange);background:rgba(249,115,22,.1);color:var(--orange);box-shadow:0 0 15px rgba(249,115,22,.2)}
+.coin-icon{font-size:18px;display:block;margin-bottom:2px}
+
+/* ── TOR STATUS PANEL ── */
+.tor-panel{background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:10px 12px;margin-bottom:8px}
+.tor-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:5px}
+@media(max-width:500px){.tor-grid{grid-template-columns:repeat(5,1fr)}}
+.tor-item{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:6px 4px;text-align:center;transition:all .3s;position:relative;overflow:hidden}
+.tor-item::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--green);transition:background .3s}
+.tor-item.error::before{background:var(--red)}
+.tor-item.warn::before{background:var(--yellow)}
+.tor-item.active-tor{border-color:var(--cyan);box-shadow:0 0 12px rgba(34,211,238,.2)}
+.tor-item.active-tor::before{background:var(--cyan)}
+.tor-label{color:var(--muted);font-size:8px;font-weight:700;letter-spacing:1px}
+.tor-dot{width:8px;height:8px;border-radius:50%;background:var(--green);margin:3px auto;transition:all .3s}
+.tor-dot.off{background:var(--red);animation:none}
+.tor-dot.active{background:var(--cyan);box-shadow:0 0 8px var(--cyan);animation:tor-pulse .8s infinite}
+@keyframes tor-pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.3)}}
+.tor-stat{color:var(--muted);font-size:7px;margin-top:2px}
+.tor-switch-banner{background:linear-gradient(135deg,rgba(34,211,238,.15),rgba(59,130,246,.1));border:1px solid rgba(34,211,238,.3);border-radius:8px;padding:6px 10px;margin-bottom:6px;display:none;text-align:center;font-size:10px;font-weight:700;color:var(--cyan);animation:slide-in .3s ease}
+@keyframes slide-in{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── WORKER STATUS ── */
+.workers-panel{background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:10px 12px;margin-bottom:8px}
+.workers-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:5px}
+@media(max-width:500px){.workers-grid{grid-template-columns:repeat(5,1fr)}}
+.worker-item{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:6px 4px;text-align:center;transition:all .3s}
+.worker-item.scanning{border-color:var(--blue);box-shadow:0 0 8px rgba(59,130,246,.2)}
+.worker-label{color:var(--muted);font-size:8px;font-weight:700}
+.worker-dot{width:7px;height:7px;border-radius:50%;background:var(--dim);margin:3px auto;transition:all .3s}
+.worker-dot.scanning{background:var(--blue);box-shadow:0 0 6px var(--blue);animation:tor-pulse .6s infinite}
+.worker-tor{color:var(--cyan);font-size:7px;margin-top:2px}
+
+/* ── LOG ── */
+.log-panel{background:var(--bg3);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:8px}
+.log-header{background:var(--bg2);padding:7px 12px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border)}
+.log-header span{color:var(--muted);font-size:10px;font-weight:700;display:flex;align-items:center;gap:6px}
+.log-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#22c55e;animation:tor-pulse .9s infinite}
+.log-dot.off{background:var(--red);animation:none}
+.log-clear{background:none;border:1px solid var(--border2);color:var(--muted);font-size:9px;padding:3px 10px;border-radius:5px;cursor:pointer;font-family:'Outfit',sans-serif;transition:all .2s}
+.log-clear:hover{border-color:var(--blue);color:var(--blue)}
+#logBox{height:420px;overflow-y:auto;padding:6px 10px;background:#050a14;font-family:'JetBrains Mono',monospace;font-size:10.5px;line-height:1.65;color:#94a3b8;-webkit-overflow-scrolling:touch;scroll-behavior:smooth}
+#logBox::-webkit-scrollbar{width:4px}
+#logBox::-webkit-scrollbar-track{background:#050a14}
+#logBox::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+.wallet-block{margin:4px 0;padding:6px 8px;background:linear-gradient(135deg,#090f20,#060d1a);border:1px solid var(--border);border-left:3px solid var(--blue);border-radius:6px}
+.wallet-mnemonic{color:var(--blue);font-weight:700;font-size:10.5px;word-break:break-all}
+.wallet-priv{color:#cbd5e1;font-size:9.5px;word-break:break-all;margin-top:1px}
+.wallet-coin-row{margin-top:4px;padding-top:4px;border-top:1px solid #0d1525}
+.coin-name{color:var(--orange);font-weight:700;font-size:10.5px;margin-top:3px}
+.addr-comp{color:var(--green);font-weight:600;font-size:9.5px}
+.addr-uncomp{color:var(--yellow);font-weight:600;font-size:9.5px}
+.bal-row{color:var(--muted);font-size:9.5px;padding-left:12px}
+.bal-val{color:var(--green);font-weight:700}
+.tx-badge{display:inline-block;background:rgba(59,130,246,.15);color:var(--blue);border:1px solid rgba(59,130,246,.3);border-radius:4px;padding:0px 4px;font-size:8px;font-weight:700;margin-left:4px}
+.api-error{color:var(--red);font-weight:700;font-size:9.5px}
+.tor-label-badge{display:inline-block;background:rgba(34,211,238,.1);color:var(--cyan);border:1px solid rgba(34,211,238,.2);border-radius:4px;padding:0 4px;font-size:8px;font-weight:700;margin-left:4px}
+
+/* ── FOUND DASHBOARD ── */
+.found-panel{background:var(--bg3);border:1px solid var(--border);border-radius:12px;margin-bottom:8px;overflow:hidden}
+.found-header{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;border-bottom:1px solid var(--border)}
+.found-title{color:var(--orange);font-size:12px;font-weight:800;letter-spacing:1px;display:flex;align-items:center;gap:8px}
+.found-count-badge{background:var(--orange);color:#040810;font-size:10px;font-weight:800;padding:2px 10px;border-radius:10px}
+.found-actions{display:flex;gap:6px}
+.btn-dl{background:rgba(59,130,246,.15);color:var(--blue);border:1px solid rgba(59,130,246,.4);padding:4px 12px;border-radius:6px;font-size:10px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;transition:all .2s}
+.btn-dl:hover{background:rgba(59,130,246,.3);border-color:var(--blue)}
+.found-empty{color:var(--dim);font-size:10px;text-align:center;padding:20px;font-style:italic}
+#foundList{max-height:350px;overflow-y:auto;padding:8px 10px}
+#foundList::-webkit-scrollbar{width:3px}
+#foundList::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+.found-card{background:linear-gradient(135deg,#0c1628,#091020);border:1px solid var(--orange);border-radius:10px;padding:10px 12px;margin-bottom:8px;position:relative;overflow:hidden;transition:box-shadow .3s}
+.found-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--orange),var(--yellow),var(--orange))}
+.found-card:hover{box-shadow:0 0 20px rgba(249,115,22,.2)}
+.fc-top{display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap}
+.fc-idx{color:var(--orange);font-weight:800;font-size:13px;min-width:30px}
+.fc-coin{color:var(--blue);font-weight:700;font-size:12px}
+.fc-type{background:rgba(234,179,8,.15);color:var(--yellow);border:1px solid rgba(234,179,8,.3);border-radius:5px;padding:1px 6px;font-size:8px;font-weight:700}
+.fc-bal{color:var(--green);font-weight:800;font-size:11px;margin-left:auto}
+.fc-tx{background:rgba(59,130,246,.12);color:var(--blue);border:1px solid rgba(59,130,246,.25);border-radius:5px;padding:1px 7px;font-size:8px;font-weight:700}
+.fc-row{display:flex;gap:6px;align-items:flex-start;margin-bottom:3px;font-size:9.5px;flex-wrap:wrap}
+.fc-label{color:var(--muted);font-weight:600;min-width:68px;flex-shrink:0;font-size:9px;text-transform:uppercase;letter-spacing:.5px}
+.fc-value{color:var(--text);word-break:break-all;font-family:'JetBrains Mono',monospace;font-size:9px}
+.fc-pk{color:#a78bfa}
+.fc-addr{color:#22d3ee}
+.fc-date{color:var(--dim);font-size:8px;margin-top:4px}
+.highlight-pulse{animation:card-glow 3s ease}
+@keyframes card-glow{0%{box-shadow:0 0 0 rgba(249,115,22,0)}30%{box-shadow:0 0 30px rgba(249,115,22,.8)}100%{box-shadow:0 0 0 rgba(249,115,22,0)}}
+
+/* ── FOOTER ── */
+.footer-speed{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:8px 16px;display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.footer-speed .f-label{color:var(--muted);font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px}
+.footer-speed .f-val{color:var(--orange);font-weight:800;font-size:15px;font-family:'JetBrains Mono',monospace}
+.dcnt{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:7px 16px;text-align:center;margin-bottom:6px;display:flex;justify-content:center;align-items:center;gap:10px}
+.dcnt-label{color:var(--muted);font-size:11px;font-weight:700}
+.dcnt-val{color:var(--green);font-size:16px;font-weight:900;text-shadow:0 0 12px rgba(34,197,94,.4);font-family:'JetBrains Mono',monospace}
+.owner-footer{background:linear-gradient(135deg,var(--bg3),var(--bg2));border:1px solid var(--border);border-top:2px solid var(--orange);border-radius:10px;padding:12px 20px;text-align:center;margin-bottom:6px;position:relative;overflow:hidden}
+.owner-footer::before{content:'';position:absolute;top:-2px;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--blue),transparent)}
+.owner-label{color:var(--muted);font-size:8px;letter-spacing:3px;text-transform:uppercase;margin-bottom:3px}
+.owner-name{color:var(--orange);font-size:14px;font-weight:900;letter-spacing:3px}
+.owner-name a{color:var(--orange);text-decoration:none;text-shadow:0 0 20px rgba(249,115,22,.5);transition:all .3s}
+.owner-name a:hover{text-shadow:0 0 35px rgba(249,115,22,1);color:#fff}
+.copy-note{color:var(--dim);font-size:9px;font-style:italic;margin-top:4px;letter-spacing:1px}
+
+/* ── FOUND ALERT ── */
+.found-alert{position:fixed;top:16px;right:16px;max-width:320px;background:linear-gradient(135deg,#1a0c00,#0d1a00);border:2px solid var(--orange);border-radius:12px;padding:12px 16px;z-index:9999;animation:alert-in .4s ease;box-shadow:0 0 30px rgba(249,115,22,.4)}
+@keyframes alert-in{from{opacity:0;transform:translateX(50px)}to{opacity:1;transform:translateX(0)}}
+.alert-title{color:var(--orange);font-weight:900;font-size:13px;margin-bottom:4px}
+.alert-body{color:var(--green);font-size:11px;font-weight:700}
+.alert-sub{color:var(--muted);font-size:9px;margin-top:4px}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- HEADER -->
+  <div class="hdr">
+    <h1>LUCK <span class="glow">WORLD</span></h1>
+    <div class="tag">v7.0 ● 10 WORKERS ● 10 TOR GROUPS ● AUTO FAILOVER &lt; 1s ● TX CHECK ● PERSISTENT</div>
+    <div class="live-row">
+      <span class="live-badge">LIVE</span>
+      <span class="conn-dot" id="connDot"></span>
+      <span class="conn-txt" id="connTxt">Connecting...</span>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats">
+    <div class="stat s-purple"><div class="stat-label">Priv Keys</div><div class="stat-val" id="sPK">0</div></div>
+    <div class="stat s-green"><div class="stat-label">Addresses</div><div class="stat-val" id="sAD">0</div></div>
+    <div class="stat s-orange"><div class="stat-label">Found</div><div class="stat-val" id="sF">0</div></div>
+    <div class="stat s-cyan"><div class="stat-label">BG Checks</div><div class="stat-val" id="sB">0</div></div>
+    <div class="stat s-yellow"><div class="stat-label">API Calls</div><div class="stat-val" id="sP">0</div></div>
+    <div class="stat s-red"><div class="stat-label">Speed/s</div><div class="stat-val" id="sS">0</div></div>
+  </div>
+
+  <!-- COIN SELECTOR -->
+  <div class="section">
+    <div class="sec-title">⚡ Select Coins (display only — ALL 5 always scanned in background)</div>
+    <div class="coins-grid" id="coinsGrid">
+      <div class="coin-btn active" data-c="btc" onclick="tog('btc')"><span class="coin-icon">₿</span>BTC</div>
+      <div class="coin-btn" data-c="eth" onclick="tog('eth')"><span class="coin-icon">Ξ</span>ETH</div>
+      <div class="coin-btn" data-c="trx" onclick="tog('trx')"><span class="coin-icon">△</span>TRX</div>
+      <div class="coin-btn" data-c="bnb" onclick="tog('bnb')"><span class="coin-icon">◆</span>BNB</div>
+      <div class="coin-btn" data-c="ltc" onclick="tog('ltc')"><span class="coin-icon">Ł</span>LTC</div>
+    </div>
+  </div>
+
+  <!-- TOR STATUS PANEL -->
+  <div class="tor-panel">
+    <div class="sec-title">🌐 TOR Groups Status — Auto-Switch on API Limit (10 Groups × 15 APIs)</div>
+    <div id="torSwitchBanner" class="tor-switch-banner"></div>
+    <div class="tor-grid" id="torGrid">
+      <!-- TOR items rendered by JS -->
+    </div>
+  </div>
+
+  <!-- WORKER STATUS -->
+  <div class="workers-panel">
+    <div class="sec-title">⚙️ Worker Status (10 Parallel Workers)</div>
+    <div class="workers-grid" id="workersGrid">
+      <!-- Worker items rendered by JS -->
+    </div>
+  </div>
+
+  <!-- LIVE LOG -->
+  <div class="log-panel">
+    <div class="log-header">
+      <span><span class="log-dot" id="logDot"></span> Live Scanner (10 Workers)</span>
+      <button class="log-clear" onclick="document.getElementById('logBox').innerHTML=''">Clear</button>
+    </div>
+    <div id="logBox"></div>
+  </div>
+
+  <!-- FOUND DASHBOARD -->
+  <div class="found-panel">
+    <div class="found-header">
+      <div class="found-title">★ FOUND DASHBOARD <span class="found-count-badge" id="foundCntBadge">0</span></div>
+      <div class="found-actions">
+        <button class="btn-dl" onclick="dlFound()">⬇ Download TXT</button>
+      </div>
+    </div>
+    <div id="foundEmpty" class="found-empty">No wallets with balance/transactions found yet...</div>
+    <div id="foundList"></div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer-speed">
+    <div><div class="f-label">Speed</div><div class="f-val"><span id="spV">0</span> wallets/sec</div></div>
+    <div style="text-align:center"><div class="f-label">Workers</div><div class="f-val">10</div></div>
+    <div style="text-align:right"><div class="f-label">TOR Groups</div><div class="f-val">10</div></div>
+  </div>
+  <div class="dcnt">
+    <span class="dcnt-label">👥 LIVE VIEWERS =</span>
+    <span class="dcnt-val" id="viewerCnt">0</span>
+  </div>
+  <div class="owner-footer">
+    <div class="owner-label">Programmer &amp; Owner</div>
+    <div class="owner-name"><a href="https://cryptographytube.in/" target="_blank" rel="noopener noreferrer">CRYPTOGRAPHYTUBE.IN</a></div>
+    <div class="copy-note">Found after million and trillion years</div>
+  </div>
+
+</div><!-- #app -->
+
+<script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
+<script>
+// ─── CONFIG ───────────────────────────────────────────────────
+var SERVER_URL = 'https://luckworld-server.onrender.com';
+var SYM = {btc:'BTC',eth:'ETH',trx:'TRX',bnb:'BNB',ltc:'LTC'};
+
+// ─── STATE ────────────────────────────────────────────────────
+var fd = [];       // found data array
+var sel = ['btc']; // selected coins
+var torData = [];  // tor health data
+var workerData = [];
+
+// ─── UTILS ────────────────────────────────────────────────────
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function fb(v){ return (parseFloat(v)||0).toFixed(8); }
+function fmt(n){ return (n||0).toLocaleString(); }
+
+// ─── INIT TOR GRID ────────────────────────────────────────────
+function initTorGrid() {
+    var g = document.getElementById('torGrid'); g.innerHTML = '';
+    for (var i = 1; i <= 10; i++) {
+        var d = document.createElement('div');
+        d.className = 'tor-item';
+        d.id = 'tor-' + i;
+        d.innerHTML = '<div class="tor-label">TOR-'+i+'</div><div class="tor-dot" id="tordot-'+i+'"></div><div class="tor-stat" id="torstat-'+i+'">Ready</div>';
+        g.appendChild(d);
+    }
+}
+
+// ─── INIT WORKERS GRID ────────────────────────────────────────
+function initWorkersGrid() {
+    var g = document.getElementById('workersGrid'); g.innerHTML = '';
+    for (var i = 1; i <= 10; i++) {
+        var d = document.createElement('div');
+        d.className = 'worker-item';
+        d.id = 'worker-' + i;
+        d.innerHTML = '<div class="worker-label">W-'+i+'</div><div class="worker-dot" id="wdot-'+i+'"></div><div class="worker-tor" id="wtor-'+i+'">TOR-?</div>';
+        g.appendChild(d);
+    }
+}
+
+// ─── UPDATE TOR STATUS ────────────────────────────────────────
+function updateTorStatus(torList) {
+    if (!torList || !torList.length) return;
+    torData = torList;
+    for (var i = 0; i < torList.length; i++) {
+        var t = torList[i];
+        var el = document.getElementById('tor-' + t.id);
+        var dot = document.getElementById('tordot-' + t.id);
+        var stat = document.getElementById('torstat-' + t.id);
+        if (!el || !dot || !stat) continue;
+        el.className = 'tor-item' + (!t.active ? ' error' : (t.errorCount > 2 ? ' warn' : ''));
+        dot.className = 'tor-dot' + (!t.active ? ' off' : '');
+        var errTxt = t.errorCount > 0 ? ' E:'+t.errorCount : '';
+        stat.textContent = t.active ? 'Active'+errTxt : 'Cooldown';
+    }
+}
+
+// ─── UPDATE WORKER STATUS ─────────────────────────────────────
+function updateWorkerStatus(workers) {
+    if (!workers || !workers.length) return;
+    workerData = workers;
+    for (var i = 0; i < workers.length; i++) {
+        var w = workers[i];
+        var el = document.getElementById('worker-' + w.id);
+        var dot = document.getElementById('wdot-' + w.id);
+        var wt = document.getElementById('wtor-' + w.id);
+        if (!el || !dot || !wt) continue;
+        var scanning = w.status === 'scanning';
+        el.className = 'worker-item' + (scanning ? ' scanning' : '');
+        dot.className = 'worker-dot' + (scanning ? ' scanning' : '');
+        wt.textContent = 'TOR-' + (w.tor || '?');
+    }
+}
+
+// ─── HIGHLIGHT ACTIVE TOR ─────────────────────────────────────
+var lastActiveTor = 0;
+function highlightActiveTor(torId) {
+    document.querySelectorAll('.tor-item').forEach(function(el){ el.classList.remove('active-tor'); });
+    var el = document.getElementById('tor-' + torId);
+    if (el) el.classList.add('active-tor');
+}
+
+// ─── UPDATE STATS ─────────────────────────────────────────────
+function uS(pk, f, api, sp) {
+    var addr = (pk||0) * 10;
+    document.getElementById('sPK').textContent = fmt(pk);
+    document.getElementById('sAD').textContent = fmt(addr);
+    document.getElementById('sF').textContent = fmt(f);
+    document.getElementById('sB').textContent = fmt(addr);
+    document.getElementById('sP').textContent = fmt(api);
+    document.getElementById('sS').textContent = fmt(sp);
+}
+
+// ─── COIN TOGGLE ─────────────────────────────────────────────
+function tog(c) {
+    var i = sel.indexOf(c);
+    if (i >= 0) { if (sel.length <= 1) return; sel.splice(i, 1); }
+    else sel.push(c);
+    document.querySelectorAll('.coin-btn').forEach(function(b){ b.classList.toggle('active', sel.indexOf(b.dataset.c) >= 0); });
+    if (socket && socket.connected) socket.emit('coins_toggle', {coins: sel});
+}
+
+// ─── ADD WALLET TO LOG ────────────────────────────────────────
+function addWallet(d) {
+    var el = document.getElementById('logBox');
+    var div = document.createElement('div');
+    div.className = 'wallet-block';
+    var torBadge = d.torGroup ? '<span class="tor-label-badge">TOR-'+d.torGroup+'</span>' : '';
+    var h = '<div class="wallet-mnemonic">'+esc(d.mnemonic)+torBadge+'</div>';
+    h += '<div class="wallet-priv">PK: '+esc(d.privkey_hex)+'</div>';
+    h += '<div class="wallet-coin-row">';
+    var coins = d.coins || {}, keys = Object.keys(coins);
+    for (var i = 0; i < keys.length; i++) {
+        var c = keys[i], sym = SYM[c]||c.toUpperCase(), cd = coins[c];
+        var comp = cd.comp||{}, uncomp = cd.uncomp||{};
+        h += '<div class="coin-name">— '+sym+' —</div>';
+        h += '<div class="addr-comp">COMP: '+esc(cd.comp_addr)+'</div>';
+        if (comp.error) {
+            h += '<div class="api-error">⚡ API LIMIT → TOR SWITCHING...</div>';
+        } else {
+            var txBadge = (comp.tx_total||0) > 0 ? '<span class="tx-badge">TX:'+comp.tx_total+'</span>' : '';
+            h += '<div class="bal-row">R:'+fb(comp.received)+' S:'+fb(comp.sent)+' B:<span class="bal-val">'+fb(comp.balance)+'</span> '+sym+txBadge+'</div>';
+        }
+        h += '<div class="addr-uncomp">UNCOMP: '+esc(cd.uncomp_addr)+'</div>';
+        if (uncomp.error) {
+            h += '<div class="api-error">⚡ API LIMIT → TOR SWITCHING...</div>';
+        } else {
+            var txBadge2 = (uncomp.tx_total||0) > 0 ? '<span class="tx-badge">TX:'+uncomp.tx_total+'</span>' : '';
+            h += '<div class="bal-row">R:'+fb(uncomp.received)+' S:'+fb(uncomp.sent)+' B:<span class="bal-val">'+fb(uncomp.balance)+'</span> '+sym+txBadge2+'</div>';
+        }
+    }
+    h += '</div>';
+    div.innerHTML = h;
+    el.appendChild(div);
+    el.scrollTop = el.scrollHeight;
+    while (el.children.length > 60) el.removeChild(el.firstChild);
+    // Update worker status from wallet
+    if (d.workerId) {
+        var wd = document.getElementById('wdot-'+d.workerId);
+        if (wd) { wd.className = 'worker-dot'; }
+    }
+}
+
+// ─── ADD FOUND CARD ───────────────────────────────────────────
+function addFoundCard(f, prepend) {
+    fd = fd.filter(function(x){ return x.idx !== f.idx; });
+    fd.push(f);
+    document.getElementById('foundEmpty').style.display = 'none';
+    document.getElementById('foundCntBadge').textContent = fd.length;
+    document.getElementById('sF').textContent = fmt(fd.length);
+
+    var existing = document.getElementById('fc-'+f.idx);
+    if (existing) existing.remove();
+
+    var c = document.createElement('div');
+    c.className = 'found-card highlight-pulse';
+    c.id = 'fc-' + f.idx;
+
+    var txInfo = '';
+    if ((f.tx_total||0) > 0) txInfo = '<span class="fc-tx">TX IN:'+fmt(f.tx_in)+' OUT:'+fmt(f.tx_out)+' TOTAL:'+fmt(f.tx_total)+'</span>';
+
+    var h = '<div class="fc-top">';
+    h += '<span class="fc-idx">#'+f.idx+'</span>';
+    h += '<span class="fc-coin">'+esc(f.coin)+'</span>';
+    if (f.addrType) h += '<span class="fc-type">'+f.addrType+'</span>';
+    h += txInfo;
+    h += '<span class="fc-bal">'+fb(f.balance)+' '+esc(f.coinSym)+'</span>';
+    h += '</div>';
+    h += '<div class="fc-row"><span class="fc-label">MNEMONIC</span><span class="fc-value">'+esc(f.mnemonic)+'</span></div>';
+    h += '<div class="fc-row"><span class="fc-label">PRIV KEY</span><span class="fc-value fc-pk">'+esc(f.privkey_hex)+'</span></div>';
+    h += '<div class="fc-row"><span class="fc-label">ADDRESS</span><span class="fc-value fc-addr">'+esc(f.address||f.comp_addr)+'</span></div>';
+    if (f.uncomp_addr && f.addrType !== 'COMPRESSED') {
+        h += '<div class="fc-row"><span class="fc-label">UNCOMP</span><span class="fc-value fc-addr">'+esc(f.uncomp_addr)+'</span></div>';
+    }
+    h += '<div class="fc-row"><span class="fc-label">BALANCE</span><span class="fc-value" style="color:var(--green);font-weight:700">R:'+fb(f.received)+' S:'+fb(f.sent)+' B:'+fb(f.balance)+' '+esc(f.coinSym)+'</span></div>';
+    if ((f.tx_total||0) > 0) {
+        h += '<div class="fc-row"><span class="fc-label">TX COUNT</span><span class="fc-value" style="color:var(--blue)">IN:'+fmt(f.tx_in)+' OUT:'+fmt(f.tx_out)+' TOTAL:'+fmt(f.tx_total)+'</span></div>';
+    }
+    if (f.savedAt) h += '<div class="fc-date">Saved: '+new Date(f.savedAt).toLocaleString()+(f.torGroup?' | TOR-'+f.torGroup:'')+'</div>';
+    c.innerHTML = h;
+
+    var list = document.getElementById('foundList');
+    if (prepend === false) list.appendChild(c);
+    else list.prepend(c);
+}
+
+// ─── SHOW FOUND ALERT ─────────────────────────────────────────
+function showFoundAlert(f) {
+    var existing = document.getElementById('foundAlert');
+    if (existing) existing.remove();
+    var a = document.createElement('div');
+    a.className = 'found-alert';
+    a.id = 'foundAlert';
+    var txLine = (f.tx_total||0) > 0 ? '<div class="alert-sub">🔄 TX: '+fmt(f.tx_total)+' transactions</div>' : '';
+    a.innerHTML = '<div class="alert-title">🎯 FOUND #'+f.idx+'!</div><div class="alert-body">'+esc(f.coin)+' '+esc(f.addrType||'')+' — B:'+fb(f.balance)+' '+esc(f.coinSym)+'</div>'+txLine+'<div class="alert-sub">'+esc((f.address||f.comp_addr||'').slice(0,20))+'...</div>';
+    document.body.appendChild(a);
+    setTimeout(function(){ a.style.opacity='0'; a.style.transform='translateX(60px)'; a.style.transition='all .5s'; setTimeout(function(){a.remove();},500); }, 5000);
+    // Also log in logBox
+    var el = document.getElementById('logBox');
+    var div = document.createElement('div');
+    div.style.cssText = 'color:#eab308;font-size:12px;font-weight:900;text-align:center;padding:8px 0;border:1px solid rgba(249,115,22,.3);border-radius:6px;margin:4px 0;background:rgba(249,115,22,.05)';
+    div.textContent = '🎯 FOUND #'+f.idx+'! '+f.coin+' '+f.addrType+' B:'+fb(f.balance)+' '+f.coinSym+(f.tx_total?' TX:'+f.tx_total:'');
+    el.appendChild(div); el.scrollTop = el.scrollHeight;
+}
+
+// ─── DOWNLOAD FOUND ───────────────────────────────────────────
+function dlFound() {
+    if (!fd.length) return;
+    var t = '=== LUCK WORLD v7.0 - FOUND WALLETS ===\n';
+    t += 'Date: '+new Date().toISOString()+'\nTotal: '+fd.length+'\nOwner: CRYPTOGRAPHYTUBE.IN\n'+'='.repeat(60)+'\n\n';
+    fd.forEach(function(f){
+        t += 'MNEMONIC: '+f.mnemonic+'\n';
+        t += 'PRIV KEY: '+f.privkey_hex+'\n';
+        t += 'COIN: '+f.coin+' ('+f.coinSym+') TYPE: '+(f.addrType||'COMP')+'\n';
+        t += 'ADDRESS: '+(f.address||f.comp_addr)+'\n';
+        if (f.uncomp_addr) t += 'UNCOMP: '+f.uncomp_addr+'\n';
+        t += 'TX IN: '+fmt(f.tx_in)+' | TX OUT: '+fmt(f.tx_out)+' | TX TOTAL: '+fmt(f.tx_total)+'\n';
+        t += 'R: '+fb(f.received)+' S: '+fb(f.sent)+' B: '+fb(f.balance)+' '+f.coinSym+'\n';
+        if (f.savedAt) t += 'DATE: '+new Date(f.savedAt).toISOString()+'\n';
+        t += '='.repeat(60)+'\n\n';
+    });
+    var b = new Blob([t], {type:'text/plain'});
+    var u = URL.createObjectURL(b);
+    var a = document.createElement('a'); a.href=u; a.download='LuckWorld_v7_Found.txt';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(u);
+}
+
+// ─── SOCKET ───────────────────────────────────────────────────
+initTorGrid();
+initWorkersGrid();
+
+var socket = io(SERVER_URL, {
+    transports: ['websocket','polling'],
+    reconnection: true,
+    reconnectionAttempts: Infinity,
+    reconnectionDelay: 2000,
+    timeout: 20000
+});
+
+socket.on('connect', function(){
+    document.getElementById('connDot').className = 'conn-dot on';
+    document.getElementById('connTxt').textContent = 'LIVE';
+    document.getElementById('logDot').className = 'log-dot';
+});
+socket.on('disconnect', function(){
+    document.getElementById('connDot').className = 'conn-dot';
+    document.getElementById('connTxt').textContent = 'Reconnecting...';
+    document.getElementById('logDot').className = 'log-dot off';
+});
+
+socket.on('init', function(d){
+    if (d.d != null) document.getElementById('viewerCnt').textContent = d.d;
+    uS(d.privKeyCount||d.checkCount||0, d.foundCount||0, d.apiCallCount||0, d.speed||0);
+    if (d.selCoins && d.selCoins.length) {
+        sel = d.selCoins;
+        document.querySelectorAll('.coin-btn').forEach(function(b){ b.classList.toggle('active', sel.indexOf(b.dataset.c) >= 0); });
+    }
+    if (d.torHealth) updateTorStatus(d.torHealth);
+    if (d.workerStatus) updateWorkerStatus(d.workerStatus);
+    // Load persistent found data
+    if (d.foundData && d.foundData.length) {
+        d.foundData.forEach(function(f){ addFoundCard(f, false); });
+        document.getElementById('foundCntBadge').textContent = d.foundData.length;
+    }
+});
+
+socket.on('wallet', function(d){
+    addWallet(d);
+    uS(d.privKeyCount||d.checkCount||0, d.foundCount||0, d.apiCallCount||0, 0);
+    if (d.workerId) {
+        var w = workerData.find(function(x){ return x.id === d.workerId; });
+        if (w) { w.status = 'idle'; w.tor = d.torGroup; updateWorkerStatus(workerData); }
+    }
+});
+
+socket.on('speed', function(d){
+    document.getElementById('spV').textContent = fmt(d.speed);
+    uS(d.privKeyCount||d.checkCount||0, d.foundCount||0, d.apiCallCount||0, d.speed||0);
+    if (d.torHealth) updateTorStatus(d.torHealth);
+    if (d.workerStatus) updateWorkerStatus(d.workerStatus);
+});
+
+socket.on('found', function(f){
+    addFoundCard(f);
+    showFoundAlert(f);
+});
+
+socket.on('tor_status', function(data){
+    updateTorStatus(data);
+});
+
+socket.on('tor_switch', function(d){
+    var banner = document.getElementById('torSwitchBanner');
+    banner.style.display = 'block';
+    banner.textContent = '⚡ API LIMIT → TOR-'+d.from+' → Switching to TOR-'+d.to+' (< 1 second)';
+    highlightActiveTor(d.to);
+    setTimeout(function(){ banner.style.display = 'none'; }, 4000);
+    // Log the switch
+    var el = document.getElementById('logBox');
+    var div = document.createElement('div');
+    div.style.cssText = 'color:#22d3ee;font-size:10px;font-weight:700;padding:2px 0';
+    div.textContent = '⚡ TOR SWITCH: TOR-'+d.from+' hit API limit → TOR-'+d.to+' activated';
+    el.appendChild(div); el.scrollTop = el.scrollHeight;
+});
+
+socket.on('coins_update', function(d){
+    if (d.coins && Array.isArray(d.coins)) {
+        sel = d.coins;
+        document.querySelectorAll('.coin-btn').forEach(function(b){ b.classList.toggle('active', sel.indexOf(b.dataset.c) >= 0); });
+    }
+});
+
+socket.on('viewers', function(d){
+    if (d.d != null) document.getElementById('viewerCnt').textContent = d.d;
+});
+
+socket.on('log', function(d){
+    var el = document.getElementById('logBox');
+    var div = document.createElement('div');
+    div.style.cssText = 'margin:2px 0;padding:1px 0';
+    div.innerHTML = d.msg;
+    el.appendChild(div); el.scrollTop = el.scrollHeight;
+});
+
+// Request full found list on connect
+socket.on('connect', function(){
+    socket.emit('get_found');
+});
+socket.on('found_list', function(d){
+    if (d.data && d.data.length) {
+        document.getElementById('foundList').innerHTML = '';
+        fd = [];
+        d.data.forEach(function(f){ addFoundCard(f, false); });
+        if (d.data.length > 0) document.getElementById('foundEmpty').style.display = 'none';
+    }
+});
+</script>
+</body>
+</html>
